@@ -1,0 +1,854 @@
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+from tkinter import colorchooser
+from tkinter import filedialog
+from tkinter import font
+import re
+import os
+
+#####         VERY IMPORTANT   ##### PLEASE READ THIS   ####
+#####         VERY IMPORTANT   ##### PLEASE READ THIS   ####
+#####         VERY IMPORTANT   ##### PLEASE READ THIS   ####
+#
+#   IF YOU ARE WORKING ON PYCHARM CONSOLE THIS APP WILL RUN PROPERLY
+#   BUT BEFORE CONVERTING IN EXE FILE YOU NEED TO CHANGE 1 LINE
+#   IN FUNCTION "run()" IN LINE
+
+#   os.system(f"python {open_my_file}")
+#
+#   YOU JUST HAVE TO CHANGE THE ABOVE TO:
+#
+# os.system(f"python {open_my_file} & PAUSE")
+#
+#
+# IF YOU DO NOT CHANGE THIS LINE THE RUN CONSOLE WILL DISAPPEAR AFTER RUNNING THE FILE WHICH WE WILL NOT PREFER
+#
+
+
+
+
+open_my_file = False      # This prevents to overwrite python files
+selected = False
+
+
+def undo():
+    textarea.event_generate("<<Undo>>")
+
+def cut():
+    textarea.event_generate("<<Cut>>")
+
+def copy():
+    textarea.event_generate("<<Copy>>")
+
+def paste():
+    textarea.event_generate("<<Paste>>")
+
+
+def frequency():  # Cursor Frequency in milliseconds
+
+    def real_frequency():
+
+        try:
+            cursor_frequency = entry.get()
+            cursor_frequency = int(cursor_frequency)
+
+            textarea.configure(insertofftime=cursor_frequency, insertontime=cursor_frequency)
+            top1.destroy()
+
+        except Exception as e:
+            top1.destroy()
+
+
+    top1 = Tk()
+    top1.geometry("750x200")
+    top1.resizable(False, False)
+
+    button_style = ttk.Style()
+    button_style.configure("W.TButton", font=("Calibiri", 28))
+
+    label = Label(top1, text="cursor frequency in milliseconds", font="Calibiri 20")
+    label.place(x=10, y=10)
+
+    entry = Entry(top1, font="Calibiri 20")
+    entry.place(x=430, y=10)
+
+    button = ttk.Button(top1, text="Apply", style="W.TButton", command=real_frequency)
+    button.place(x=150, y=140, width=200, height=50)
+
+    top1.mainloop()
+
+
+
+def thickness():
+
+    def real_thickness():
+
+        width = entry.get()
+        width = int(width)
+
+        textarea.configure(insertwidth=width)
+        top1.destroy()
+
+        messagebox.showinfo("Notepad", f"Cursor thickness changed to {width} px")
+
+    top1 = Tk()
+    top1.geometry("600x200")
+    top1.resizable(False, False)
+
+    button_style = ttk.Style()
+    button_style.configure("W.TButton", font=("Calibiri", 28))
+
+    label = Label(top1, text="cursor thickness", font="Calibiri 20")
+    label.place(x=10, y=10)
+
+    entry = Entry(top1, font="Calibiri 20")
+    entry.insert(0, 2)
+    entry.place(x=230, y=10)
+
+    button = ttk.Button(top1, text="Apply", style="W.TButton", command=real_thickness)
+    button.place(x=150, y=140, width=200, height=50)
+
+
+    top1.mainloop()
+
+
+
+
+
+
+##########################################
+
+def fonts():   # This function is used to change font size and style except font color
+
+    root0 = Tk()
+    root0.resizable(False, False)
+    root0.geometry('400x400')
+    root0.title('Font')
+
+    l1 = Label(root0, text="Font:")
+    l1.place(x=10, y=10)
+    f = StringVar()
+    my_fonts = ttk.Combobox(root0, width=15, textvariable=f, state='readonly', font=('verdana', 10, 'bold'), )
+    my_fonts['values'] = font.families()
+    my_fonts.place(x=10, y=30)
+    my_fonts.current(74)
+
+    l2 = Label(root0, text="Font Style:")
+    l2.place(x=180, y=10)
+    st = StringVar()
+    # font_style = ttk.Combobox(root0, width=15, textvariable=st, state='readonly', font=('verdana', 10, 'bold'), )
+    # font_style['values'] = ('bold', 'bold italic', 'italic')
+    # font_style.place(x=180, y=30)
+    # font_style.current(0)
+
+    l3 = Label(root0, text="Size:")
+    l3.place(x=350, y=10)
+    sz = StringVar()
+    size = ttk.Combobox(root0, width=2, textvariable=sz, state='readonly', font=('verdana', 10, 'bold'), )
+
+    size['values'] = (
+        8, 9, 10, 12, 15, 20, 23, 25, 27, 30, 35, 40, 43, 47, 50, 55, 65, 76, 80, 90, 100, 150, 200, 255, 300)
+    size.place(x=350, y=30)
+    size.current(3)
+
+    sample = LabelFrame(root0, text="Sample", height=100, width=200)
+    sample['font'] = (my_fonts.get(), size.get())#, font_style.get())
+    sample.place(x=180, y=220)
+
+    l4 = Label(sample, text="This is sample")
+    l4.place(x=20, y=30)
+
+
+
+    # These functions make the buttons in font style work
+
+    def OK():
+
+        textarea['font'] = (my_fonts.get(), size.get())#, font_style.get())
+        root0.destroy()
+
+    ok = ttk.Button(root0, text="OK", command=OK)
+    ok.place(x=127, y=350)
+
+    def Apl():
+        l4['font'] = (my_fonts.get(), size.get())#, font_style.get())
+
+    Apply = ttk.Button(root0, text="Apply", command=Apl)
+    Apply.place(x=210, y=350)
+
+    def Cnl():
+        root0.destroy()
+
+    cancel = ttk.Button(root0, text="Cancel", command=Cnl)
+    cancel.place(x=295, y=350)
+    root0.mainloop()
+
+#############END OF FONT SIZE#########################
+
+
+
+
+
+#################################
+
+def exit_app():   # This function asks before exiting app
+
+    req = messagebox.askyesno("Exit?", "Do you want to save changes?")
+
+    if req == 1:
+        save_file()
+        exit()
+
+    if req == 0:
+        exit()
+
+
+
+###################################
+
+def save_as(*args):  # This function is used to save file initially
+
+    try:
+
+        text_file = filedialog.asksaveasfilename(defaultextension=".py", title="Save As", filetypes=(("Python Files", "*.py"), ("All Files", "*.*")))
+
+        if text_file:
+
+            text_file = open(text_file, 'w')
+            text_file.write(textarea.get(1.0, END))
+            text_file.close()
+
+            textarea.delete(1.0, END)
+            textarea.insert(1.0, "Your file was saved please open your file to start working on it\n\n Go on 'File' click on 'Open' to open your file...")
+
+
+            messagebox.showinfo("Save Successful", "Your file was saved Successfully\n Please open it to start working on it")
+
+    except EXCEPTION or FileNotFoundError:
+        pass
+
+
+
+#######################################
+
+def save_file(*args):  # This function is used to save file automatically
+    global open_my_file
+
+    if open_my_file:
+
+        text_file = open(open_my_file, 'w')
+        text_file.write(textarea.get(1.0, END))
+        text_file.close()
+
+    else:
+        save_as()
+
+
+
+##############################################
+
+
+def open_file(*args):   # This function is very important and is used to open files
+
+    request = messagebox.askyesno("Ask", "Are you sure you want to open a this file?\n If the eisting file is not saved the data will be lost")
+
+    if request == 1:
+        textarea.delete(1.0, END)
+
+        try:
+            text_file = filedialog.askopenfilename(title="Open File", filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("Python Files", "*.py"), ("All Files", "*.*")))
+
+            name = text_file
+            print(name)
+
+            if text_file:
+                global open_my_file
+                open_my_file = text_file
+
+            text_file = open(text_file, 'r')
+            stuff = text_file.read()
+
+            textarea.insert(END, stuff)
+            text_file.close()
+
+        except FileNotFoundError or UnicodeDecodeError:
+            pass
+
+
+######################################################
+
+def new_file(*args):   # This function is used to make the file new... open_my_file is set to false to prevent overwriting
+
+    request = messagebox.askyesno("Ask", "Are you sure you want a new file?\n If this file is not saved the data will be lost")
+    if request == 1:
+        textarea.delete(1.0, END)
+
+        global open_my_file
+        open_my_file = False
+
+
+
+##########################################
+
+def select_bg_color():    # This function is used to select the color of textarea
+    try:
+        color_code = colorchooser.askcolor(title="Choose Color for your Background")
+        color_code = list(color_code)
+        textarea["background"] = color_code[1]
+    except EXCEPTION:
+        pass
+
+
+
+
+#######################################
+
+def scrollbar_style():   # This function is a set of functions to style scrollbars
+
+    def backsc():
+        try:
+            color_code = colorchooser.askcolor(title="Choose Color for your Background")
+            color_code = list(color_code)
+
+            style1 = ttk.Style()
+            style1.theme_use('alt')
+
+
+            style1.configure("Horizontal.TScrollbar", gripcount=0,
+                             background=color_code[1], arrowcolor="none")
+
+            style1.configure("Vertical.TScrollbar", gripcount=0,
+                             background=color_code[1], arrowcolor="none")
+        except EXCEPTION or TypeError:
+            pass
+
+    def trough_c():
+        try:
+            color_code = colorchooser.askcolor(title="Choose Color for your Background")
+            color_code = list(color_code)
+
+            style1 = ttk.Style()
+            style1.theme_use('alt')
+
+
+            style1.configure("Horizontal.TScrollbar", gripcount=0,
+                             troughcolor=color_code[1], arrowcolor="none")
+
+            style1.configure("Vertical.TScrollbar", gripcount=0,
+                             troughcolor=color_code[1], arrowcolor="none")
+        except EXCEPTION or TypeError:
+            pass
+
+    top = Tk()
+    top.title("Customize your scrollbar")
+    top.geometry("300x200")
+    top.configure(bg="white")
+    top.resizable(False, False)   # This disables the user to increase size of the top window
+
+
+    button_style = ttk.Style()
+    button_style.configure("W.TButton", font=("Calibiri", 28))
+
+    background_color = ttk.Button(top, text="Background Color", style="W.TButton", command=backsc)
+    trough_color = ttk.Button(top, text="Trough Color    ", style="W.TButton", command=trough_c)
+
+    background_color.place(x=60, y=30, width=200, height=50)
+    trough_color.place(x=60, y=80, width=200, height=50)
+
+
+    top.mainloop()
+
+
+
+
+
+#################################################
+
+
+def select_fg_color():   # This function is used to change text color
+    try:
+        color_code = colorchooser.askcolor(title="Choose Color for your text")
+        color_code = list(color_code)
+        textarea["foreground"] = color_code[1]
+    except EXCEPTION:
+        pass
+
+
+
+
+
+###################################
+
+def select_cursor_color():   # This function is used to change the color of cursor
+
+    try:
+        color_code = colorchooser.askcolor(title="Choose Color for your Cursor")
+        color_code = list(color_code)
+        textarea["insertbackground"] = color_code[1]
+
+    except EXCEPTION:
+        pass
+
+
+
+
+
+#########################################
+
+def selected_bg_color():   # This color changes the background for selected text
+
+    try:
+        color_code = colorchooser.askcolor(title="Choose Color for your Background")
+        color_code = list(color_code)
+        textarea["selectbackground"] = color_code[1]
+
+    except EXCEPTION:
+        pass
+
+
+
+##########################################
+
+def selected_fg_color():   # Change the text color when selected
+    try:
+        color_code = colorchooser.askcolor(title="Choose Color for your Background")
+        color_code = list(color_code)
+        textarea["selectforeground"] = color_code[1]
+
+    except EXCEPTION:
+        pass
+
+
+
+
+########################################################
+
+def check():   # This functions enables and disables the word wrap
+    textwrap = var.get()
+
+    if textwrap == 0:
+        textarea["wrap"] = "none"
+        messagebox.showinfo("Info from notepad", "Word wrap disabled!")
+
+    else:
+        textarea["wrap"] = WORD
+        messagebox.showinfo("Info from notepad", "Word wrap enabled!")
+
+
+
+##############################
+
+def run(*args):  # This function change runs the python code
+
+    os.system(f"python {open_my_file}")
+
+    if FileNotFoundError:
+        messagebox.showinfo("Info", "Please save your file before running")
+
+
+
+
+
+########################################
+
+
+
+# The base of the IDE
+
+root = Tk()
+root.geometry("600x400+200+200")
+root.configure(bg="white")
+
+
+def dracula():
+
+    dracula_1 = "#282a36"
+
+    textarea.configure(background=dracula_1, foreground="white", insertbackground="white")
+
+
+    style1 = ttk.Style()
+    style1.theme_use('alt')
+
+    style1.configure("Horizontal.TScrollbar", gripcount=0,
+                     background="gray", darkcolor="DarkGreen", lightcolor="LightGreen",
+                     troughcolor=dracula_1, bordercolor="blue", arrowcolor="none")
+
+    style1.configure("Vertical.TScrollbar", gripcount=0,
+                     background="grey", darkcolor="DarkGreen", lightcolor="LightGreen",
+                     troughcolor=dracula_1, bordercolor="blue", arrowcolor="none")
+
+    scrollx.configure(style="Horizontal.TScrollbar")
+    scrolly.configure(style="Vertical.TScrollbar")
+
+
+
+def cmd_theme():
+
+    cmd = "black"
+
+    textarea.configure(background=cmd, foreground="white",
+                       insertbackground="white", insertwidth=10,
+                       selectbackground="white", selectforeground="black")
+
+
+def powershell_theme():
+
+    powershell = "blue"
+
+    textarea.configure(background=powershell, foreground="yellow",
+                       insertbackground="white", insertwidth=10,
+                       selectbackground="wheat", selectforeground="#0f52ba")
+
+
+
+
+# Textarea===============================================
+
+
+frame_1 = Frame(root)
+frame_1.pack(fill="both", expand=1)
+
+style = ttk.Style()
+style.configure('My.Horizontal.TScrollbar', troughcolor="blue")
+
+
+scrollx = ttk.Scrollbar(frame_1, orient=HORIZONTAL)
+scrollx.pack(side=BOTTOM, fill=X)
+
+scrolly = ttk.Scrollbar(frame_1, orient=VERTICAL)
+scrolly.pack(side=RIGHT, fill=Y)
+
+
+textarea = Text(frame_1, width=200, height=0,
+                wrap="none", undo=TRUE, insertwidth=2,
+                font="Calibiri 12", fg="black")
+
+
+textarea.pack(fill="both", expand=1)
+
+
+
+
+
+textarea.configure(xscrollcommand=scrollx.set, yscrollcommand=scrolly.set)
+
+scrollx.configure(command=textarea.xview)
+scrolly.configure(command=textarea.yview)
+
+
+
+
+# /Textarea==============================================
+
+
+
+
+menubar = Menu(root)
+
+filemenu = Menu(menubar, tearoff=False)
+filemenu.add_command(label="New                    Ctrl+N", command=new_file)
+filemenu.add_command(label="Open...                Ctrl+O", command=open_file)
+filemenu.add_command(label="Save                   Ctrl+S", command=save_file)
+filemenu.add_command(label="Save As...             Ctrl+S", command=save_as)
+filemenu.add_separator()
+filemenu.add_command(label="Exit", command=exit_app)
+
+menubar.add_cascade(label="File", menu=filemenu)
+
+
+
+editmenu = Menu(menubar, tearoff=False)
+editmenu.add_command(label="Undo                    Ctrl+Z", command=undo)
+editmenu.add_separator()
+editmenu.add_command(label="Cut                     Ctrl+X", command=cut)
+editmenu.add_command(label="Copy                    Ctrl+C", command=copy)
+editmenu.add_command(label="Paste                   Ctrl+V", command=paste)
+
+
+menubar.add_cascade(label="Edit", menu=editmenu)
+
+
+
+
+var = IntVar()
+formatmenu = Menu(menubar, tearoff=False)
+formatmenu.add_checkbutton(label="Word Wrap", variable=var, onvalue=1, offvalue=0, command=check)
+formatmenu.add_command(label="Font", command=fonts)
+
+menubar.add_cascade(label="Format", menu=formatmenu)
+
+
+
+
+run_menu = Menu(menubar, tearoff=0)
+run_menu.add_command(label="Run                    F5", command=run)
+
+menubar.add_cascade(menu=run_menu, label="Run")
+
+
+
+style_menu = Menu(menubar, tearoff=False)
+style_menu.add_command(label="Choose Background Color", command=select_bg_color)
+style_menu.add_command(label="Choose text color", command=select_fg_color)
+style_menu.add_command(label="Choose text cursor color", command=select_cursor_color)
+style_menu.add_command(label="Choose selected text background color", command=selected_bg_color)
+style_menu.add_command(label="Change Cursor thickness", command=thickness)
+style_menu.add_command(label="Change Cursor frequency", command=frequency)
+style_menu.add_command(label="Choose selected text color", command=selected_fg_color)
+style_menu.add_command(label="Change Scrollbar style", command=scrollbar_style)
+style_menu.add_separator()
+
+
+
+
+t_radio = IntVar()
+def theme_radio():
+    myconcern = t_radio.get()
+    print(myconcern)
+
+
+
+themes_menu = Menu(style_menu, tearoff=False)
+themes_menu.add_radiobutton(label="Dracula", variable=t_radio, command=dracula)
+themes_menu.add_radiobutton(label="cmd theme", variable=t_radio, command=cmd_theme)
+themes_menu.add_radiobutton(label="powershell theme", variable=t_radio, command=powershell_theme)
+
+style_menu.add_cascade(menu=themes_menu, label="Inbuilt Themes")
+
+
+
+
+
+menubar.add_cascade(label="Styling", menu=style_menu)
+
+
+
+
+
+
+
+
+# These Functions are placed here because of an error
+
+
+
+
+
+
+
+
+def pressed(event2):
+
+    widget = event2.widget
+
+    widget.configure(fg="blue")
+
+textarea.bind("if", pressed)
+
+
+def autoindent(event):
+    # the text widget that received the event
+    widget = event.widget
+
+    # get current line
+    line = widget.get("insert linestart", "insert lineend")
+
+    # compute the indentation of the current line
+    match = re.match(r'^(\s+)', line)
+    current_indent = len(match.group(0)) if match else 0
+
+    # compute the new indentation
+    new_indent = current_indent + 4
+
+    # insert the character that triggered the event,
+    # a newline, and then new indentation
+    widget.insert("insert", event.char + "\n" + " "*new_indent)
+
+
+
+
+    def next_auto_indent(event1):
+        value = textarea.index(INSERT)
+
+        on_splitting = value.split('.')
+
+        number = [int(i) for i in on_splitting]
+        print(number)
+
+        if number[1] >= new_indent:
+            print(number[1], current_indent)
+            textarea.insert("insert", "\n" + " " * new_indent)
+            return "break"
+
+        if number[1] < new_indent:
+            textarea.unbind("<Return>", autoindent)
+
+
+
+
+    textarea.bind("<Return>", next_auto_indent)
+
+
+
+    # return 'break' to prevent the default behavior
+    return "break"
+
+
+textarea.bind(":", autoindent)
+
+
+
+
+def autoindent_p(event):
+
+    prenthases = textarea.get("insert linestart", "insert lineend")
+    textarea.insert("insert", "()")
+
+
+    a = textarea.index(INSERT)
+
+    on_splitting = a.split('.')
+
+    number = [int(i) for i in on_splitting]
+    print(number)
+
+
+    textarea.mark_set("insert", "%d.%d" % (number[0], number[1] - 1))
+
+    return "break"
+
+textarea.bind('(', autoindent_p)
+
+
+
+
+def autoindent(event):
+
+    brackets = textarea.get("insert linestart", "insert lineend")
+    textarea.insert("insert", "[]")
+
+
+    a = textarea.index(INSERT)
+
+    on_splitting = a.split('.')
+
+    number = [int(i) for i in on_splitting]
+    print(number)
+
+
+    textarea.mark_set("insert", "%d.%d" % (number[0], number[1] - 1))
+
+    return "break"
+
+textarea.bind('[', autoindent)
+
+
+
+def autoindent(event):
+
+    brackets = textarea.get("insert linestart", "insert lineend")
+    textarea.insert("insert", "{}")
+
+
+    a = textarea.index(INSERT)
+
+    on_splitting = a.split('.')
+
+    number = [int(i) for i in on_splitting]
+    print(number)
+
+
+    textarea.mark_set("insert", "%d.%d" % (number[0], number[1] - 1))
+
+    return "break"
+
+textarea.bind('{', autoindent)
+
+
+
+def autoindent_i(event):
+
+    colon = textarea.get("insert linestart", "insert lineend")
+    textarea.insert("insert", "\"\"")
+
+
+    a = textarea.index(INSERT)
+
+    on_splitting = a.split('.')
+
+    number = [int(i) for i in on_splitting]
+    print(number)
+
+
+    textarea.mark_set("insert", "%d.%d" % (number[0], number[1] - 1))
+
+    return "break"
+
+textarea.bind('"', autoindent_i)
+
+
+
+def autoindent_i(event):
+
+    colon = textarea.get("insert linestart", "insert lineend")
+    textarea.insert("insert", "\'\'")
+
+
+    a = textarea.index(INSERT)
+
+    on_splitting = a.split('.')
+
+    number = [int(i) for i in on_splitting]
+    print(number)
+
+
+    textarea.mark_set("insert", "%d.%d" % (number[0], number[1] - 1))
+
+    return "break"
+
+textarea.bind('\'', autoindent_i)
+
+
+root.configure(menu=menubar)
+
+
+
+
+
+
+
+
+label = Label(root, text=f"rows & columns: {textarea.index(INSERT)}", anchor=E, bg="#eee")
+label.pack(side=BOTTOM, fill=X)
+
+
+
+def capture_rows_and_columns(event):
+
+    label.configure(text=f"rows & columns: {textarea.index(INSERT)}")
+
+
+textarea.bind('<Button-1>', capture_rows_and_columns)
+textarea.bind('<Key>', capture_rows_and_columns)
+
+
+def tab_func(event):
+    textarea.get("insert linestart", "insert lineend")
+    textarea.insert("insert", "    ")
+
+    return "break"
+
+textarea.bind("<Tab>", tab_func)
+
+
+# Edit Bindings
+
+
+root.bind("<Control-Key-s>", save_file)
+root.bind("<Control-Key-n>", new_file)
+root.bind("<Control-Key-o>", open_file)
+root.bind("<F5>", run)
+
+root.mainloop()
